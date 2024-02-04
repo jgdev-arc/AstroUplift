@@ -1,4 +1,4 @@
-package com.tlz.astrouplift.components.functionality_components.core.data.remote.dto
+package com.tlz.astrouplift.components.functionality_components.core.data.remote.models
 
 
 import kotlinx.serialization.SerialName
