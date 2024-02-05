@@ -10,13 +10,6 @@ import com.tlz.astrouplift.components.functionality_components.core.domain.mappe
 import com.tlz.astrouplift.components.functionality_components.headline.data.local.model.HeadlineDto
 import com.tlz.astrouplift.components.functionality_components.headline.data.local.model.HeadlineRemoteKey
 import com.tlz.astrouplift.components.functionality_components.headline.data.remote.HeadlineApi
-import hoods.com.newsy.features_components.core.data.local.NewsyArticleDatabase
-import hoods.com.newsy.features_components.core.data.remote.models.Article
-import hoods.com.newsy.features_components.core.domain.mapper.Mapper
-import hoods.com.newsy.features_components.headline.data.local.model.HeadlineDto
-import hoods.com.newsy.features_components.headline.data.local.model.HeadlineRemoteKey
-import hoods.com.newsy.features_components.headline.data.mapper.ArticleHeadlineDtoMapper
-import hoods.com.newsy.features_components.headline.data.remote.HeadlineApi
 import retrofit2.HttpException
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -49,9 +42,24 @@ class HeadlineRemoteMediator(
         state: PagingState<Int, HeadlineDto>
     ): MediatorResult {
         val page: Int = when(loadType) {
-            LoadType.REFRESH -> {}
-            LoadType.PREPEND -> {}
-            LoadType.APPEND -> {}
+            LoadType.REFRESH -> {
+                val remoteKey = getRemoteKeyClosestToCurrentPosition(state)
+                remoteKey?.nextKey?.minus(1) ?: 1
+            }
+            LoadType.PREPEND -> {
+                val remoteKey = getRemoteKeyForFirstItem(state)
+                val prevKey = remoteKey?.prevKey
+                prevKey ?: return MediatorResult.Success(
+                    endOfPaginationReached = remoteKey != null
+                )
+            }
+            LoadType.APPEND -> {
+                val remoteKey = getRemoteKeyForLastTime(state)
+                val nextKey = remoteKey?.nextKey
+                nextKey ?: return MediatorResult.Success(
+                    endOfPaginationReached = remoteKey != null
+                )
+            }
         }
         return try {
             val headlineApiResponse = api.getHeadlines(
@@ -94,8 +102,45 @@ class HeadlineRemoteMediator(
             MediatorResult.Success(endOfPaginationReached)
         } catch (error: IOException) {
             MediatorResult.Error(error)
-        } catch (error: HttpException) {
+        } catch (error: retrofit2.HttpException) {
             MediatorResult.Error(error)
         }
+
     }
+
+
+    private suspend fun getRemoteKeyForFirstItem(
+        state: PagingState<Int, HeadlineDto>
+    ): HeadlineRemoteKey? {
+        return state.pages.firstOrNull() {
+            it.data.isNotEmpty()
+        }?.data?.firstOrNull()?.let { article ->
+            database.headlineRemoteDao().getRemoteKeyByArticleId(article.url)
+        }
+    }
+
+    private suspend fun getRemoteKeyClosestToCurrentPosition(
+        state: PagingState<Int, HeadlineDto>
+    ): HeadlineRemoteKey? {
+        return state.anchorPosition?.let {position ->
+            state.closestItemToPosition(position)?.url?.let {id ->
+                database.headlineRemoteDao().getRemoteKeyByArticleId(id)
+            }
+        }
+    }
+
+    private suspend fun getRemoteKeyForLastTime(
+        state: PagingState<Int, HeadlineDto>
+    ): HeadlineRemoteKey? {
+        return state.pages.lastOrNull() {
+            it.data.isNotEmpty()
+        }?.data?.lastOrNull()?.let { article ->
+            database.headlineRemoteDao().getRemoteKeyByArticleId(article.url)
+        }
+    }
+
+
+
+
+
 }
