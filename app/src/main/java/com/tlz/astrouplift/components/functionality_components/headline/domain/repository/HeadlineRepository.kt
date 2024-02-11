@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface HeadlineRepository {
     fun fetchHeadlineArticle(
         category: String,
+        country: String,
         language: String
     ) : Flow<PagingData<AstroUpliftArticle>>
 

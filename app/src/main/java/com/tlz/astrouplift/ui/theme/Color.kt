@@ -1,6 +1,6 @@
 package com.tlz.astrouplift.ui.theme
 
-import android.graphics.Color
+import androidx.compose.ui.graphics.Color
 
 
 val md_theme_light_primary = Color(0xFF855400)

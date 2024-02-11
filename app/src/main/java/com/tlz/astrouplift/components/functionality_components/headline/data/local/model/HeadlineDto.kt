@@ -2,11 +2,12 @@ package com.tlz.astrouplift.components.functionality_components.headline.data.lo
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.tlz.astrouplift.components.functionality_components.core.data.local.LocalContractDto
 
 @Entity(tableName = "headline_table")
 data class HeadlineDto(
-    override val id: Int,
+    @PrimaryKey override val id: Int,
     override val author: String,
     override val content: String,
     override val description: String,
