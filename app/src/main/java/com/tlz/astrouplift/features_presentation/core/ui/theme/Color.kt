@@ -1,4 +1,4 @@
-package com.tlz.astrouplift.ui.theme
+package com.tlz.astrouplift.features_presentation.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

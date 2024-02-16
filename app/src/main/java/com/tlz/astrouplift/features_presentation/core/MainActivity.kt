@@ -1,4 +1,4 @@
-package com.tlz.astrouplift
+package com.tlz.astrouplift.features_presentation.core
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,7 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.tlz.astrouplift.ui.theme.AstroUpliftTheme
+import com.tlz.astrouplift.features_presentation.core.ui.theme.AstroUpliftTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

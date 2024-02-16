@@ -1,4 +1,4 @@
-package com.tlz.astrouplift.ui.theme
+package com.tlz.astrouplift.features_presentation.core.ui.theme
 
 import android.app.Activity
 import android.os.Build
