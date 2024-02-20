@@ -6,9 +6,11 @@ import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
@@ -21,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,6 +35,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -40,17 +44,18 @@ import com.tlz.astrouplift.components.functionality_components.core.domain.Astro
 import com.tlz.astrouplift.features_presentation.core.components.defaultPadding
 import com.tlz.astrouplift.features_presentation.core.components.itemPadding
 import com.tlz.astrouplift.features_presentation.core.components.itemSpacing
+import com.tlz.astrouplift.features_presentation.core.ui.theme.AstroUpliftTheme
 import com.tlz.astrouplift.utils.Utils
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HeadlineItem(
-    articles: List<AstroUpliftArticle>,
+    article: List<AstroUpliftArticle>,
     articleCount: Int,
     onCardClick: (AstroUpliftArticle) -> Unit,
     onViewMoreClick: () -> Unit,
-    onFavoriteChange: () -> Unit
+    onFavoriteChange: (AstroUpliftArticle) -> Unit
 ) {
     var isAutoScrolling by remember {
         mutableStateOf(true)
@@ -91,9 +96,25 @@ fun HeadlineItem(
                     targetState = page,
                     label = ""
                 ) {index ->
-
+                    HeadlineCard(
+                        modifier = Modifier,
+                        article = article[index],
+                        onCardClick = onCardClick,
+                        onFavoriteChange = onFavoriteChange
+                    )
                 }
+            } else {
+                HeadlineCard(
+                    modifier = Modifier,
+                    article = article[page],
+                    onCardClick = onCardClick,
+                    onFavoriteChange = onFavoriteChange
+                )
             }
+        }
+        Spacer(modifier = Modifier.size(2.dp))
+        TextButton(onClick = onViewMoreClick) {
+            Text("view more")
         }
     }
 
@@ -156,5 +177,50 @@ private fun HeadlineCard(
             }
         }
     }
+}
 
+@Preview(showBackground = true)
+@Composable
+fun PrevHeadlineItem() {
+    val article = listOf(
+        AstroUpliftArticle(
+            author = "John Doe",
+            content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+            description = "A short description of the article.",
+            publishedAt = "2024-02-19T12:34:56Z",
+            source = "Newsy Source",
+            title = "Dummy News Title",
+            url = "https://example.com",
+            urlToImage = "https://example.com/image.jpg",
+            id = 1,
+            category = "Technology",
+            favorite = true,
+            page = 1
+        ),
+        AstroUpliftArticle(
+            author = "Jane Smith",
+            content = "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            description = "Another short description of the article.",
+            publishedAt = "2024-02-20T10:45:30Z",
+            source = "Another News Source",
+            title = "Another Dummy News Title",
+            url = "https://example.com/another",
+            urlToImage = "https://example.com/another-image.jpg",
+            id = 2,
+            category = "Science",
+            favorite = true,
+            page = 1
+        )
+        // Add more articles as needed
+    )
+
+    AstroUpliftTheme {
+        HeadlineItem(
+            article,
+            articleCount = 2,
+            onCardClick = {},
+            onViewMoreClick = {},
+            onFavoriteChange = {}
+        )
+    }
 }
